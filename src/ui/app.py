@@ -264,27 +264,35 @@ with st.container():
     n_left, n_right = st.columns([6.2, 3.8])
     
     favorites = config.get_favorites()
-    # Initialize plain state var (NOT a widget key — writable anytime)
+    
+    # ── STATE SYNC: Apply buffered changes BEFORE widgets render ────────────
+    if 'nav_path_next' in st.session_state:
+        st.session_state.nav_path_val = st.session_state.nav_path_next
+        st.session_state.nav_path_input = st.session_state.nav_path_next
+        del st.session_state.nav_path_next
+
     if 'nav_path_val' not in st.session_state:
         st.session_state.nav_path_val = config.get_last_used_path() or ""
-    # Sync input widget value → plain state var on change
+    
+    # Ensure current value is seeded into widget state if missing
+    if 'nav_path_input' not in st.session_state:
+        st.session_state.nav_path_input = st.session_state.nav_path_val
+
     def _sync_path():
         st.session_state.nav_path_val = st.session_state.nav_path_input
 
     with n_left:
-        l1, l2, l3 = st.columns([2.5, 5, 1.3], vertical_alignment="bottom")
+        # Balanced: Fav Sel (3), Path Input (6), Browse (1.5)
+        l1, l2, l3 = st.columns([3, 5.5, 1.5], vertical_alignment="bottom")
         with l1:
             st.markdown("<small><b>Project Favorites</b></small>", unsafe_allow_html=True)
             fav_options = ["-- Favorites --"] + (favorites if favorites else [])
             selected_fav = st.selectbox("fav", fav_options, label_visibility="collapsed", key="nav_fav_sel")
-            if selected_fav != "-- Favorites --":
-                # Pending path set; apply before widget renders on next rerun
-                st.session_state.nav_path_val = selected_fav
-                st.session_state.nav_path_input = selected_fav
+            if selected_fav != "-- Favorites --" and selected_fav != st.session_state.nav_path_val:
+                st.session_state.nav_path_next = selected_fav
                 st.rerun()
         with l2:
             st.markdown("<small><b>Ingestion Path</b></small>", unsafe_allow_html=True)
-            # Widget uses its OWN key; on_change syncs back to nav_path_val
             st.text_input(
                 "path",
                 value=st.session_state.nav_path_val,
@@ -297,25 +305,24 @@ with st.container():
             if st.button("📁 Browse", help="Pick Folder", key="nav_picker", use_container_width=True):
                 path = select_folder()
                 if path:
-                    # Safe: nav_path_val is a plain state var, not a widget key
-                    st.session_state.nav_path_val = path
-                    st.session_state.nav_path_input = path
+                    st.session_state.nav_path_next = path
                     st.rerun()
 
     with n_right:
-        r1, r2 = st.columns([1.5, 3.5], vertical_alignment="bottom")
+        # Balanced: Toggle Fav (2.5), Sync Action (3.5)
+        r1, r2 = st.columns([2, 3], vertical_alignment="bottom")
         with r1:
             st.markdown("<small><b>&nbsp;</b></small>", unsafe_allow_html=True) 
             current_path = st.session_state.nav_path_val
             is_fav = (current_path or "").replace("\\", "/") in [f.replace("\\", "/") for f in favorites]
-            btn_text = "⭐ Fav" if not is_fav else "🗑️ Unfav"
-            if st.button(btn_text, help="Add/Remove Favorite", key="nav_fav_toggle", use_container_width=True):
+            btn_text = "⭐ Favorite" if not is_fav else "🗑️ Unfav"
+            if st.button(btn_text, key="nav_fav_toggle", use_container_width=True):
                 if is_fav: config.remove_favorite(current_path)
                 else: config.add_favorite(current_path)
                 st.rerun()
         with r2:
             st.markdown("<small><b>&nbsp;</b></small>", unsafe_allow_html=True) 
-            sync_triggered = st.button("Sync & Re-index", key="sync_btn", use_container_width=True)
+            sync_triggered = st.button("🔄 Sync & Index", key="sync_btn", use_container_width=True)
 
 # Status Container (Outside columns to prevent height fragmentation)
 status_placeholder = st.empty()
