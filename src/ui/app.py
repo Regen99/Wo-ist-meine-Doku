@@ -4,15 +4,30 @@ import os
 import sys
 import subprocess
 import re
+from src.engine.pipeline import DiscoveryPipeline
+from src.utils.config import ConfigManager
+import tkinter as tk
+from tkinter import filedialog
 
-# Ensure the project root is in sys.path for local imports
+# Restore project_root for path resolution (used by reveal_in_explorer)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.engine.pipeline import DiscoveryPipeline
-import tkinter as tk
-from tkinter import filedialog
+# ── Setup & Theme Evaluation ──────────────────────────────────────────────────
+@st.cache_resource
+def get_config():
+    return ConfigManager()
+
+@st.cache_resource
+def get_pipeline():
+    return DiscoveryPipeline()
+
+config = get_config()
+
+if 'pipeline' not in st.session_state:
+    with st.spinner("Initializing Discovery Engine..."):
+        st.session_state.pipeline = get_pipeline()
 
 def select_folder():
     """ Opens a native folder selection dialog. """
@@ -195,9 +210,7 @@ base_css = f"""
 st.markdown(base_css, unsafe_allow_html=True)
 
 # Initialize Backend Pipeline (cached in session)
-if 'pipeline' not in st.session_state:
-    with st.spinner("Initializing Discovery Engine..."):
-        st.session_state.pipeline = DiscoveryPipeline()
+# Redundant block removed (already initialized at top)
 
 # ── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -205,38 +218,67 @@ with st.sidebar:
     st.subheader("Discovery Engine")
     st.divider()
 
+    # ── Multi-Path Management (Favorites) ───────────────────────────────────
+    st.markdown("### Project Favorites")
+    favorites = config.get_favorites()
+    
+    if favorites:
+        selected_fav = st.selectbox(
+            "Select a favorite project",
+            ["-- Choose a Favorite --"] + favorites,
+            label_visibility="collapsed",
+            key="fav_dropdown"
+        )
+        # Use _pending_dir pattern — same as folder picker — to avoid
+        # Streamlit widget state conflicts (cannot write to a widget key
+        # after it has already been rendered in the current run).
+        if selected_fav != "-- Choose a Favorite --" and selected_fav != st.session_state.get("_dir_widget"):
+            st.session_state._pending_dir = selected_fav
+            config.set_last_used_path(selected_fav)
+            st.rerun()
+    else:
+        st.info("No favorite paths saved yet.")
+
+    st.divider()
     st.markdown("### Document Ingestion")
 
-    # ── Pending update pattern ──────────────────────────────────────────────
-    # Streamlit rule: you cannnot write to a widget's key AFTER it's been
-    # instantiated in the same run. Solution: store the picked path in a
-    # temporary "_pending_dir" key, call st.rerun(), and on the very next run
-    # (BEFORE the widget is created), copy the pending value into the widget key.
     if '_pending_dir' in st.session_state:
         st.session_state._dir_widget = st.session_state._pending_dir
+        config.set_last_used_path(st.session_state._pending_dir)
         del st.session_state._pending_dir
 
-    # Initialize widget state on first load
+    # Initialize widget state from config if not existing
     if '_dir_widget' not in st.session_state:
-        st.session_state._dir_widget = "data/raw"
+        st.session_state._dir_widget = config.get_last_used_path()
 
-    st.caption("Source Directory")
-    col_path, col_btn = st.columns([4, 1])
+    st.caption("Current Source Path")
+    col_path, col_btn_pick, col_btn_fav = st.columns([4, 1, 1])
+    
     with col_path:
-        st.text_input(
+        current_path = st.text_input(
             "Source Directory",
-            key="_dir_widget",          # widget owns this key
+            key="_dir_widget",
             label_visibility="collapsed"
         )
-    with col_btn:
+    
+    with col_btn_pick:
         if st.button("📁", help="Select Source Folder"):
             picked_path = select_folder()
             if picked_path:
-                # Store in pending — will be applied BEFORE widget instantiates on next run
                 st.session_state._pending_dir = picked_path
                 st.rerun()
 
+    with col_btn_fav:
+        is_fav = current_path.replace("\\", "/") in favorites
+        if st.button("⭐" if not is_fav else "🗑️", help="Add/Remove Favorite"):
+            if is_fav:
+                config.remove_favorite(current_path)
+            else:
+                config.add_favorite(current_path)
+            st.rerun()
+
     if st.button("Sync & Re-index", use_container_width=True):
+        config.set_last_used_path(current_path)
         with st.status("Ingesting Documents...", expanded=True) as status:
             new_files = st.session_state.pipeline.run_incremental_pipeline(st.session_state._dir_widget)
             status.update(
@@ -305,14 +347,13 @@ if search_query:
         for idx, res in enumerate(results):
             full_source_path = res.get("source_path", "Unknown")
             filename = os.path.basename(full_source_path)
-            # Apply highlighting to content
             content = highlight_text(res.get("text", ""), search_query)
             source_path = html.escape(full_source_path)
             lang = html.escape(res.get("language", "und").upper())
             is_legal = res.get("legal_context", False)
-            legal_badge = "<span class='legal-tag'>LEGAL §</span>" if is_legal else ""
+            legal_badge = f"<span class='legal-tag'>LEGAL §</span>" if is_legal else ""
 
-            # Define the card HTML (Clean Rendering - No Indentation to avoid MD code blocks)
+            # Define the card HTML
             card_html = (
                 f'<div class="result-card">'
                 f'<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px dashed #dad4c8; padding-bottom: 16px;">'
@@ -320,20 +361,30 @@ if search_query:
                 f'<span class="file-tag">FILE: {html.escape(filename)}</span>'
                 f'</div>'
                 f'<div class="result-card-text">{content}</div>'
-                f'<div style="margin-top: 24px; font-family: \'Space Mono\', monospace; font-size: 0.75rem; color: #9f9b93;">'
-                f'PATH: {source_path}'
-                f'</div>'
                 f'</div>'
             )
+            st.markdown(card_html, unsafe_allow_html=True)
             
-            # Action layout
-            col_card, col_action = st.columns([0.88, 0.12])
-            with col_card:
-                st.markdown(card_html, unsafe_allow_html=True)
-            with col_action:
-                st.markdown("<br><br>", unsafe_allow_html=True)  # Vertical spacing
-                if st.button("📂 Reveal", key=f"rev_{idx}_{filename}", help="Open file location in Explorer"):
-                    reveal_in_explorer(full_source_path)
+            # Expansion for Preview and Actions
+            with st.expander(f"👁️ Preview & Actions: {filename}"):
+                col_prev, col_act = st.columns([1, 2])
+                with col_prev:
+                    if filename.lower().endswith(".pdf"):
+                        thumb_bytes = st.session_state.pipeline.generate_thumbnail(full_source_path)
+                        if thumb_bytes:
+                            st.image(thumb_bytes, use_container_width=True, caption="First Page Preview")
+                        else:
+                            st.info("No preview available")
+                    else:
+                        st.info("Preview support only for PDF")
+                
+                with col_act:
+                    st.write(f"**Full Path:**")
+                    st.code(full_source_path, language="text")
+                    if st.button("📂 Open in Explorer", key=f"open_{idx}_{filename}"):
+                        reveal_in_explorer(full_source_path)
+                    
+                    st.caption("Tip: Use 'Open in Explorer' to locate the document instantly.")
 else:
     st.info("Tip: Try searching for specific legal concepts or technical requirements.")
 

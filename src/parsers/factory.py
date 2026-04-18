@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 from .office import OfficeParser
 from .pdf import PDFParser
 
@@ -7,16 +8,16 @@ class ParserFactory:
     """
     Unified entry point for document parsing.
     Detects file formats and routes to the specialized parser (Office or PDF).
-    Fix #10: Removed dead generator-based parse() method.
     """
 
     OFFICE_EXTENSIONS = {'.docx', '.pptx', '.xlsx', '.doc', '.ppt', '.xls'}
     PDF_EXTENSIONS = {'.pdf'}
 
-    def __init__(self):
+    def __init__(self, ocr_engine=None):
         # Lazy initialization for consistent pattern
         self._office_parser = None
         self._pdf_parser = None
+        self.ocr_engine = ocr_engine
 
     @property
     def office_parser(self):
@@ -27,7 +28,7 @@ class ParserFactory:
     @property
     def pdf_parser(self):
         if self._pdf_parser is None:
-            self._pdf_parser = PDFParser()
+            self._pdf_parser = PDFParser(ocr_engine=self.ocr_engine)
         return self._pdf_parser
 
     def get_parser(self, file_path: str):

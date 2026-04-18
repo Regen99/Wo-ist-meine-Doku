@@ -7,6 +7,9 @@ fastembed
 # Parsing
 pdfplumber
 sharepoint-to-text>=0.1.0
+rapidocr_onnxruntime
+pymupdf
+opencv-python-headless
 
 # UI & Storage
 streamlit

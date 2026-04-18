@@ -26,18 +26,26 @@ Indexieren Sie Ordner und Unterordner automatisch. Suchen Sie nach Konzepten wie
 ### Hybride Suche
 Kombiniert leistungsstarke Volltextsuche (FTS5) mit semantischer Vektorähnlichkeit. Dies stellt sicher, dass exakte Stichworttreffer genauso zuverlässig gefunden werden wie konzeptionelle Übereinstimmungen.
 
-### UI/UX: Clay Design System
-Ein handgefertigtes "Clay"-Design mit warmen Farbtönen (Night Clay für den Dunkelmodus), taktilen Hover-Animationen und markanten Schatten. Inklusive der Schaltfläche **"Im Explorer anzeigen"** und einer **nativen Ordnerauswahl** für eine intuitive Bedienung.
+### ONNX-OCR (NEU)
+Ermöglicht die Suche in gescannten PDFs oder "reinen Bildern". Das System nutzt die **RapidOCR-Engine** (ONNX-basiert), um Text automatisch zu erkennen, wenn keine native Textebene vorhanden ist. Ideal für die Digitalisierung von Papierarchiven.
 
-### Ultra-Lite Parsing (NEU)
-Nutzt extrem schnelle, CPU-effiziente Parser (`pdfplumber`), um Text aus Dokumenten sofort zu extrahieren, ohne schwere neuronale Layout-Engines laden zu müssen. Dies verhindert System-Freezes, die zuvor durch komplexe KI-Verarbeitung verursacht wurden.
+### Visuelle Vorschau (NEU)
+Jedes PDF-Suchergebnis kann nun mit einer **High-Fidelity-Miniaturansicht** der ersten Seite eingeblendet werden. Dies ermöglicht eine sofortige visuelle Bestätigung, bevor das Dokument vollständig geöffnet wird.
+
+### Multi-Projekt-Favoriten (NEU)
+Verwalten Sie mehrere Dokumentenquellen und wechseln Sie über die Sidebar zwischen verschiedenen Projekt-Ordnern. Das System merkt sich Ihre bevorzugten Pfade für einen nahtlosen Arbeitsablauf.
+
+### UI/UX: Clay Design System
+Ein handgefertigtes "Clay"-Design mit warmen Farbtönen (Night Clay für den Dunkelmodus), taktilen Hover-Animationen und markanten Schatten. Inklusive der Schaltfläche **"Im Explorer anzeigen"** und einer **nativen Ordnerauswahl**.
+
+---
 
 ### Unterstützung mehrerer Formate
 Leistungsstarke Parser verarbeiten eine Vielzahl von Dokumenttypen unter Beibehaltung der Dokumentstruktur.
 
 | Format | Erweiterungen | Anmerkungen |
 |------|--------|------|
-| Portable Document | `.pdf` | Strukturierte Textextraktion |
+| Portable Document | `.pdf` | Inkl. OCR für Scans & Vorschaubilder |
 | Textverarbeitung | `.docx` `.doc` | Strukturelle Hierarchie bleibt erhalten |
 | Tabellenkalkulation | `.xlsx` `.xls` | Verfolgung bis auf Zellenebene (Zeile/Spalte) |
 | Präsentationen | `.pptx` | Folienbasierte semantische Indexierung |

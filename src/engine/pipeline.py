@@ -2,8 +2,10 @@ from src.parsers.factory import ParserFactory
 from src.engine.chunker import DiscoveryChunker
 from src.engine.embeddings import DiscoveryEmbedder
 from src.engine.database import DiscoveryDB
+from src.engine.ocr import DiscoveryOCR
 import os
 import logging
+import fitz  # PyMuPDF
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -11,11 +13,34 @@ logger = logging.getLogger(__name__)
 
 class DiscoveryPipeline:
     def __init__(self, use_gpu: bool = False):
-        self.factory = ParserFactory()
+        # Initialize engines
+        self.ocr_engine = DiscoveryOCR()
+        self.factory = ParserFactory(ocr_engine=self.ocr_engine)
+        
         # Create ONE embedder, inject into chunker to share memory
         self.embedder = DiscoveryEmbedder(use_gpu=use_gpu)
         self.chunker = DiscoveryChunker(embedder=self.embedder)
         self.db = DiscoveryDB()
+
+    def generate_thumbnail(self, file_path: str) -> Any:
+        """
+        Generates a PNG thumbnail of the first page of a PDF.
+        Returns bytes or None.
+        """
+        if not file_path.lower().endswith(".pdf"):
+            return None
+        
+        try:
+            doc = fitz.open(file_path)
+            if len(doc) > 0:
+                page = doc.load_page(0)
+                pix = page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))  # 50% scale
+                img_bytes = pix.tobytes("png")
+                doc.close()
+                return img_bytes
+        except Exception as e:
+            logger.error(f"Thumbnail error for {file_path}: {e}")
+        return None
 
     def ingest_file(self, file_path: str) -> bool:
         """
@@ -41,6 +66,10 @@ class DiscoveryPipeline:
         if not markdown_content or not markdown_content.strip():
             logger.warning(f"Skipping {os.path.basename(file_path)}: Empty content after parsing.")
             return False
+
+        # Prepend filename to enable Discovery by title (Option A)
+        filename = os.path.basename(file_path)
+        markdown_content = f"Dokument: {filename}\n\n{markdown_content}"
 
         # 3. Semantic chunking & metadata enrichment
         chunks_with_meta = self.chunker.chunk_document(file_path, markdown_content)
@@ -81,7 +110,10 @@ class DiscoveryPipeline:
         total_indexed = 0
         supported = {".pdf", ".docx", ".xlsx", ".pptx"}
 
-        for root, _, files in os.walk(directory_path):
+        for root, dirs, files in os.walk(directory_path):
+            # Prune hidden and system directories (e.g., .git, $RECYCLE.BIN)
+            dirs[:] = [d for d in dirs if not d.startswith('.') and not d.startswith('$')]
+            
             for file in files:
                 ext = os.path.splitext(file)[1].lower()
                 if ext in supported:

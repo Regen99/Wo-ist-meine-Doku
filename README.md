@@ -16,6 +16,9 @@ Your system has been optimized for Maximum Speed and Stability on your local PC.
 -   **Reveal in Explorer**: Added a "Reveal" button to results to instantly open file locations in Windows.
 -   **Night Clay (Dark Mode)**: Added a dynamic theme toggle for high-fidelity dark mode experience.
 -   **Native Folder Picker**: Added a visual directory selection tool in the sidebar for effortless document ingestion.
+-   **ONNX-OCR**: Integrated RapidOCR to ensure searchability of scanned/blank documents.
+-   **Visual Previews**: Added PDF miniatures in search results for instant visual confirmation.
+-   **Multi-Path Favorites**: Implemented a project favorite system to manage multiple document sources seamlessly.
 
 ## Data
 -   Place your documents (PDF, DOCX, XLSX, PPTX) in the `data/raw` folder.
@@ -54,18 +57,26 @@ Automatically index folders and subfolders. Search for concepts like "Fire safet
 ### Hybrid Retrieval
 Combines high-performance Full-Text Search (FTS5) with Semantic Vector Similarity. This ensures that exact keyword matches are found as reliably as conceptual matches.
 
-### UI/UX: Clay Design System
-A handcrafted "Clay" aesthetic featuring warm cream canvases (Night Clay for dark mode), tactile hover animations, and hard offset shadows. Includes a **Reveal in Explorer** button and a **Native Folder Picker** for intuitive navigation.
+### ONNX-OCR (NEW)
+Enables search in scanned PDFs or "image-only" documents. The system uses the **RapidOCR engine** (ONNX-based) to automatically recognize text when no native text layer is found. Perfect for digitizing paper archives.
 
-### Ultra-Lite Parsing (NEW)
-Uses high-speed, CPU-efficient parsers (`pdfplumber`) to extract text from documents instantly without loading heavy neural layout engines. This eliminates the system freezing previously caused by complex AI parsing.
+### Visual Previews (NEW)
+Each PDF search result can now be expanded to show a **high-fidelity thumbnail** of the first page. This allows for instant visual confirmation before fully opening the document.
+
+### Multi-Project Favorites (NEW)
+Manage multiple document sources and switch between different project folders via the sidebar. The system remembers your favorite paths for a seamless workflow.
+
+### UI/UX: Clay Design System
+A handcrafted "Clay" aesthetic featuring warm cream canvases (Night Clay for dark mode), tactile hover animations, and hard offset shadows. Includes a **Reveal in Explorer** button and a **Native Folder Picker**.
+
+---
 
 ### Multi-Format Support
 Powerful parsers handle a wide array of document types with preservation of document structure.
 
 | Format | Extensions | Notes |
 |------|--------|------|
-| Portable Document | `.pdf` | Structured text extraction |
+| Portable Document | `.pdf` | Incl. OCR for scans & visual previews |
 | Word Processing | `.docx` `.doc` | Structural hierarchy preserved |
 | Spreadsheets | `.xlsx` `.xls` | Cell-level row/column tracking |
 | Presentations | `.pptx` | Slide-based semantic indexing |
@@ -102,7 +113,8 @@ The system is designed for maximum compliance and data sovereignty. When AI feat
 |------|------------|----------|
 | Ingestion & Indexing | Local SQLite / LanceDB | None |
 | Semantic Search | Local Vector Index | None |
-| Embedding Operations | Local ONNX/Torch Model | None |
+| Embedding Operations | Local ONNX Model | None |
+| OCR Operations | Local ONNX Engine | None |
 | Document Preview | In-memory Cache | None |
 | Telemetry | Disabled | None |
 
@@ -118,6 +130,8 @@ graph TD
         Pipeline --> Chunker[Recursive Chunker]
         Pipeline --> Embedder[MiniLM-L12-v2 Embedder]
         Pipeline --> DB[LanceDB Hybrid Store]
+        Pipeline --> OCR[RapidOCR ONNX Engine]
+        Pipeline --> Thumb[PyMuPDF Thumbnailer]
     end
     
     subgraph "Parsing Layer"
