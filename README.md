@@ -8,24 +8,20 @@ Your system has been optimized for Maximum Speed and Stability on your local PC.
 2.  **To Use the App**: Double-click **`Launch-Doku.bat`**.
     *   This will start the dashboard and automatically open your web browser.
 
-## Changes made for Lite Mode
--   **Engine**: Replaced heavy IBM Docling (~1.2GB RAM) with ultra-fast `pdfplumber`.
--   **No More Freezing**: Stripped memory-intensive AI parsers and LangChain dependencies to ensure stable performance on any PC.
--   **Recursive Chunking**: Switched to a zero-ML splitting logic that is 100x faster during ingestion.
--   **Model**: Using high-efficiency `paraphrase-multilingual-MiniLM-L12-v2`. It is optimized for 50+ languages and runs instantly on CPU.
--   **Reveal in Explorer**: Added a "Reveal" button to results to instantly open file locations in Windows.
--   **Night Clay (Dark Mode)**: Added a dynamic theme toggle for high-fidelity dark mode experience.
--   **Native Folder Picker**: Added a visual directory selection tool in the sidebar for effortless document ingestion.
--   **ONNX-OCR**: Integrated RapidOCR to ensure searchability of scanned/blank documents.
--   **Visual Previews**: Added PDF miniatures in search results for instant visual confirmation.
--   **Multi-Path Favorites**: Implemented a project favorite system to manage multiple document sources seamlessly.
+### Key Innovations in v1.3.10
+-   **Folder-Aware Discovery**: Added a "Current Folder Only" search toggle. Restrict your search to the active project path instantly without re-indexing.
+-   **Engine Speed**: Replaced heavy dependencies with ultra-fast ONNX-based **FastEmbed**.
+-   **Multimodal Raw Ingestion**: Native support for **.md, .txt, .csv, and .log** files.
+-   **Professional UX**: "Warm Enterprise" design with light/dark mode support and unified high-contrast elements.
+-   **Robust State Management**: Decoupled widget keys from internal state to prevent "StreamlitAPIException" and ensure a seamless folder-browsing experience.
+-   **No More Freezing**: Stripped memory-intensive AI parsers and LangChain dependencies to ensure stable 100% offline performance.
 
 ## Data
--   Place your documents (PDF, DOCX, XLSX, PPTX) in the `data/raw` folder.
--   Click **"Sync & Re-index"** inside the app to process them.
+-   Place your documents (PDF, DOCX, XLSX, PPTX, **TXT, MD, CSV**) in any folder.
+-   Select the folder in the Nav bar and click **"🔄 Sync & Index"**.
 
 ---
-*Wo ist meine Doku v1.0 — 100% Offline | GDPR Compliant | Professional Architecture*
+*Wo ist meine Doku v1.3.10 — 100% Offline | GDPR Compliant | Professional Architecture*
 
 ---
 
@@ -54,20 +50,23 @@ Wo ist meine Doku is a high-performance, professional-grade discovery engine des
 ### Semantic Content Discovery
 Automatically index folders and subfolders. Search for concepts like "Fire safety regulations for inner-city residential areas" rather than just "fire safety". The system understands context and finds relevant paragraphs across thousands of files.
 
+### Folder-Filtered Search (NEW)
+Focus your search on specific projects. Use the "Current Folder Only" toggle to filter results to the active directory shown in your navigation bar. Perfect for working with multiple client folders simultaneously.
+
 ### Hybrid Retrieval
 Combines high-performance Full-Text Search (FTS5) with Semantic Vector Similarity. This ensures that exact keyword matches are found as reliably as conceptual matches.
 
-### ONNX-OCR (NEW)
+### ONNX-OCR (INTEGRATED)
 Enables search in scanned PDFs or "image-only" documents. The system uses the **RapidOCR engine** (ONNX-based) to automatically recognize text when no native text layer is found. Perfect for digitizing paper archives.
 
-### Visual Previews (NEW)
+### Visual Previews
 Each PDF search result can now be expanded to show a **high-fidelity thumbnail** of the first page. This allows for instant visual confirmation before fully opening the document.
 
-### Multi-Project Favorites (NEW)
-Manage multiple document sources and switch between different project folders via the sidebar. The system remembers your favorite paths for a seamless workflow.
+### Multi-Project Favorites & Favorites
+Manage multiple document sources and switch between different project folders via the top toolbar. The system remembers your favorite paths and the last used directory for a seamless workflow.
 
-### UI/UX: Clay Design System
-A handcrafted "Clay" aesthetic featuring warm cream canvases (Night Clay for dark mode), tactile hover animations, and hard offset shadows. Includes a **Reveal in Explorer** button and a **Native Folder Picker**.
+### UI/UX: Warm Enterprise Design
+A high-fidelity professional interface featuring a warm beige backdrop, tactile "White Box" interactive elements with high-contrast black borders, and unified color synchronization for all dropdowns, tooltips, and document previews.
 
 ---
 
@@ -80,7 +79,7 @@ Powerful parsers handle a wide array of document types with preservation of docu
 | Word Processing | `.docx` `.doc` | Structural hierarchy preserved |
 | Spreadsheets | `.xlsx` `.xls` | Cell-level row/column tracking |
 | Presentations | `.pptx` | Slide-based semantic indexing |
-| Plain Text | `.txt` `.md` | Automated encoding detection |
+| Plain Text | `.txt` `.md` `.csv` `.log` | Direct string-based parsing |
 
 ---
 
@@ -94,10 +93,7 @@ Powerful parsers handle a wide array of document types with preservation of docu
 
 ### 2. Setup
 Double-click **`install.bat`** in the root directory.
-This will:
-- Create a local virtual environment.
-- Install the **FastEmbed** library and ONNX Runtime (CPU-optimized).
-- Download the embedding model (~150MB, one-time operation).
+This will create a local virtual environment and install all dependencies.
 
 ### 3. Launch
 Double-click **`Launch-Doku.bat`** to start the Discovery Dashboard.
@@ -107,7 +103,7 @@ Your browser will open automatically to `http://localhost:8501`.
 
 ## Security & Data Privacy
 
-The system is designed for maximum compliance and data sovereignty. When AI features are disabled, there is **zero network communication**.
+The system is designed for maximum compliance and data sovereignty. Operations are 100% offline.
 
 | Feature | Data Location | External Transmission |
 |------|------------|----------|
@@ -128,7 +124,7 @@ graph TD
     
     subgraph "Engine Layer"
         Pipeline --> Chunker[Recursive Chunker]
-        Pipeline --> Embedder[MiniLM-L12-v2 Embedder]
+        Pipeline --> Embedder[FastEmbed ONNX]
         Pipeline --> DB[LanceDB Hybrid Store]
         Pipeline --> OCR[RapidOCR ONNX Engine]
         Pipeline --> Thumb[PyMuPDF Thumbnailer]
@@ -151,7 +147,7 @@ graph TD
 |------|------|
 | **Interface** | Streamlit |
 | **Orchestration** | Python 3.10+ |
-| **Vector Engine** | LanceDB (LCA) |
+| **Vector Engine** | LanceDB (SQL + Vector) |
 | **Embeddings** | FastEmbed (paraphrase-multilingual-MiniLM-L12-v2) |
 | **Parsing** | pdfplumber / python-docx / openpyxl |
 | **Inference** | ONNX Runtime (CPU-Optimized) |

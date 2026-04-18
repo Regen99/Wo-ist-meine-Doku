@@ -10,10 +10,13 @@
 
 - [Discovery DB](src/engine/database.py) - LanceDB storage for hybrid search.
 - [RapidOCR](src/engine/ocr.py) - ONNX-based lightweight OCR engine for scanned PDF discovery.
+- [Discovery Text Parser](src/parsers/text.py) - Lightweight string-based parser for .md, .txt, and .csv.
 - [ConfigManager](src/utils/config.py) - Persistent configuration system for favorites and last-used states.
 
 ## Concepts
 - [Turbo-Lite Architecture](src/engine/pipeline.py) - Radical optimization: Removed PyTorch/Transformers for ONNX-based inference.
+- [Warm Enterprise UX](src/ui/app.py) - Professional aesthetic: Beige backdrop (#faf8f4) with High-Contrast White Box components.
+- [Multimodal Raw Ingestion](src/engine/pipeline.py) - Unified pipeline for Office, PDF, Markdown, and Plain Text discovery.
 - [ONNX-OCR Fallback](src/parsers/pdf.py) - Automatic optical character recognition for scanned/blank documents using RapidOCR.
 - [PDF Visual Previews](src/engine/pipeline.py) - High-fidelity thumbnail generation for first-page visual confirmation.
 - [Project Favorites](src/ui/app.py) - Multi-path management system for switching between document sources.
@@ -22,6 +25,8 @@
 - [Native Folder Picker](src/ui/app.py) - Windows directory selection via `tkinter` with state-sync fix.
 - [Recursive Chunking](src/engine/chunker.py) - Balanced document splitting using RecursiveCharacterTextSplitter for zero ML overhead during ingestion.
 - [Zero-AI Discovery](wiki/status_report.md) - Optimized retrieval strategy focusing on 100% data fidelity.
+- [Runtime Hardening](src/ui/app.py) - Graceful degradation and lazy loading | Stability | 2026-04-18
+- [Top NAV Toolbar](src/ui/app.py) - Centralized project controls for better UX | UI | 2026-04-18
 
 ## Sources
 - [research.md](wiki/research.md) - Strategic Architectural Blueprint for Integrated Multimodal Semantic Search.

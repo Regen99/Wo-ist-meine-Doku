@@ -21,20 +21,25 @@ from tkinter import filedialog
 project_root = _project_root
 
 
+# Current UI Version (Used for cache invalidation)
+APP_VERSION = "1.3.10"
+
 # ── Setup & Theme Evaluation ──────────────────────────────────────────────────
 @st.cache_resource
-def get_config():
+def get_config(ver: str):
     return ConfigManager()
 
 @st.cache_resource
-def get_pipeline():
+def get_pipeline(ver: str):
     return DiscoveryPipeline()
 
-config = get_config()
+config = get_config(APP_VERSION)
 
-if 'pipeline' not in st.session_state:
+# Version-aware init: replace the pipeline if app was updated mid-session
+if st.session_state.get("_pipeline_ver") != APP_VERSION:
     with st.spinner("Initializing Discovery Engine..."):
-        st.session_state.pipeline = get_pipeline()
+        st.session_state.pipeline = get_pipeline(APP_VERSION)
+        st.session_state["_pipeline_ver"] = APP_VERSION
 
 def select_folder():
     """ Opens a native folder selection dialog. """

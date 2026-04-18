@@ -7,7 +7,7 @@
 ## 🚀 Current Capabilities
 
 ### 1. Unified Ingestion (Turbo-Lite)
-- **Formats**: PDF, DOCX, XLSX, PPTX.
+- **Formats**: PDF, DOCX, XLSX, PPTX, **MD, TXT, CSV, LOG**.
 - **Languages**: German (DE), Korean (KR), English (EN).
 - **Strategy**: Recursive Character splitting (Balanced context) + Metadata enrichment.
 - **Performance**: High-speed ingestion with zero ML overhead during splitting.
@@ -25,6 +25,7 @@
 
 ### 4. User Interface
 - **Dashboard**: Professional Streamlit interface.
+- **Design**: "Warm Enterprise" (Beige #faf8f4) with High-Contrast "White Box" widgets.
 - **Rebranding**: Fully transitioned to "Wo ist meine Doku".
 
 ## 🛡️ Privacy & Compliance
@@ -35,7 +36,7 @@
 ## 📈 Roadmap (Revised)
 - **Epic 4**: Advanced Cross-Document Comparison (PLANNED).
 - **Epic 5**: Spreadsheet Export and Reporting (PLANNED).
-- **Epic 6**: OCR integration (Re-evaluating as optional lightweight plugin).
+- **Epic 6**: **OCR Integration (COMPLETE)** - Via RapidOCR (ONNX).
 - **Epic 7**: LAN Deployable Build.
 
 ---

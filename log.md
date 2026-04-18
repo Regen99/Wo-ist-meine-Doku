@@ -1,4 +1,5 @@
 ## [2026-04-18] [STABILITY] | Lazy loaded OCR dependencies to prevent startup crashes.
+## [2026-04-18] [FEAT] | Added support for .md, .txt, .csv, and .log files.
 ## [2026-04-18] [UI] | Implemented Total White contrast mode for Light Mode widgets.
 ## [2026-04-18] [UI] | Overhauled sidebar-heavy design to Top NAV Toolbar layout for ingestion/favorites.
 
