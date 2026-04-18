@@ -22,9 +22,12 @@
 - [Exact Match Search](src/ui/app.py) - Hybrid toggle for switching between Semantic (Vector) and Literal (FTS) search.
 - [Native Folder Picker](src/ui/app.py) - Windows directory selection via `tkinter` with state-sync fix.
 - [Recursive Chunking](src/engine/chunker.py) - Balanced document splitting using RecursiveCharacterTextSplitter for zero ML overhead during ingestion.
-- [Zero-AI Discovery](wiki/status_report.md) - Optimized retrieval strategy focusing on 100% data fidelity.
-- [Runtime Hardening](src/ui/app.py) - Graceful degradation and lazy loading | Stability | 2026-04-18
-- [2026-04-18] [FIX] | Responsive UI Hardening (v1.3.13)
+- [Recursive Directory Indexing](src/engine/pipeline.py) - Default behavior: `os.walk` crawls all subfolders unless they are hidden (`.`) or system (`$`) directories.
+25: - [Zero-AI Discovery](wiki/status_report.md) - Optimized retrieval strategy focusing on 100% data fidelity.
+26: - [Runtime Hardening](src/ui/app.py) - Graceful degradation and lazy loading | Stability | 2026-04-18
+- [Recursive Search Toggle](src/ui/app.py) - Granular control over deep vs. flat directory discovery | v1.3.17
+
+## [2026-04-18] [UI] | Sidebar Identity: Recursive Font (v1.3.15)
 - Implemented strict `nowrap` constraints for tags and action buttons.
 - Adjusted column ratios (18/52/15/15) for better badge visibility on small screens.
 - Fixed font/icon wrapping issues in search result headers.

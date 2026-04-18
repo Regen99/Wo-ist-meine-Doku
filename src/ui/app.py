@@ -22,7 +22,7 @@ project_root = _project_root
 
 
 # Current UI Version (Used for cache invalidation)
-APP_VERSION = "1.3.10"
+APP_VERSION = "1.3.17"
 
 # ── Setup & Theme Evaluation ──────────────────────────────────────────────────
 @st.cache_resource
@@ -373,13 +373,15 @@ with s_col2:
     lang_filter = st.selectbox("lang", ["All", "DE", "EN"], label_visibility="collapsed", key="lang_sel_val")
 
 st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-col_opt1, col_opt2, col_opt3 = st.columns([0.3, 0.35, 0.35])
+col_opt1, col_opt2, col_opt3, col_opt4 = st.columns([0.25, 0.25, 0.25, 0.25])
 with col_opt1:
     legal_only = st.checkbox("Focus on Legal Context")
 with col_opt2:
     exact_match = st.checkbox("Exact Keyword Match")
 with col_opt3:
     current_folder_only = st.checkbox("Current Folder Only", value=False)
+with col_opt4:
+    include_subfolders = st.checkbox("Include Subfolders", value=True, disabled=not current_folder_only)
 
 if search_query:
     st.divider()
@@ -393,7 +395,8 @@ if search_query:
             language=filter_lang, 
             legal_only=legal_only, 
             exact_match=exact_match,
-            path_prefix=path_filter
+            path_prefix=path_filter,
+            recursive=include_subfolders
         )
     except Exception as e:
         results = None
@@ -457,4 +460,4 @@ if search_query:
                         st.caption("Engine: Ultra-Lite ONNX • Left-aligned grid V1.3")
 
 st.divider()
-st.caption("Wo ist meine Doku v1.3.2 — High-fidelity retrieval. 100% offline.")
+st.caption("Wo ist meine Doku v1.3.17 — Recursive Search Toggle. 100% offline.")

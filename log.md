@@ -1,3 +1,14 @@
+## [2026-04-18] [FEAT] | Recursive Search Toggle (v1.3.17)
+- Added "Include Subfolders" toggle to search filters.
+- Implemented `ILIKE` for case-insensitive path matching in LanceDB.
+- Hardened path prefix logic to ensure clean folder boundary matching.
+- Enabled granular control over deep vs. flat directory discovery.
+
+## [2026-04-18] [QA] | Subfolder Indexing Clarification (v1.3.16)
+- Confirmed that indexing is fully recursive via `os.walk`.
+- Confirmed that "Current Folder Only" search filter is recursive via SQL `LIKE` prefix matching.
+- Documented exclusion of hidden (`.`) and system (`$`) folders.
+
 ## [2026-04-18] [UI] | Sidebar Identity: Recursive Font (v1.3.15)
 - Switched all sidebar text elements to the `Recursive` Google Font.
 - Imported `Recursive` (wght 300-1000) for better navigational contrast.

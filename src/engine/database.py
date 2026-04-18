@@ -77,7 +77,8 @@ class DiscoveryDB:
                language: Optional[str] = None,
                legal_only: bool = False,
                exact_match: bool = False,
-               path_prefix: Optional[str] = None) -> List[Dict[str, Any]]:
+               path_prefix: Optional[str] = None,
+               recursive: bool = True) -> List[Dict[str, Any]]:
         """
         Hybrid search (Semantic Vector + Full-Text Search).
         Supports language, legal context, and directory filtering.
@@ -90,9 +91,18 @@ class DiscoveryDB:
         if legal_only:
             filters.append("legal_context = true")
         if path_prefix:
-            # Prefix match for directory filtering
+            # Case-insensitive path matching for Windows stability
             clean_prefix = path_prefix.replace("\\", "/").rstrip("/")
-            filters.append(f"source_path LIKE '{clean_prefix}%'")
+            if recursive:
+                # Matches the directory itself or anything inside it
+                filters.append(f"(source_path ILIKE '{clean_prefix}' OR source_path ILIKE '{clean_prefix}/%')")
+            else:
+                # Matches only files directly inside this specific directory
+                # We use ILIKE for the exact prefix plus one level of nesting check logic
+                # Actually, simple equality or LIKE without nested slashes
+                # source_path LIKE 'prefix/%' AND source_path NOT LIKE 'prefix/%/%'
+                filters.append(f"(source_path ILIKE '{clean_prefix}/%')")
+                filters.append(f"NOT (source_path ILIKE '{clean_prefix}/%/%')")
 
         filter_str = " AND ".join(filters) if filters else None
 

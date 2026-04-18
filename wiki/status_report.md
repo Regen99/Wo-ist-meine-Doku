@@ -9,8 +9,9 @@
 ### 1. Unified Ingestion (Turbo-Lite)
 - **Formats**: PDF, DOCX, XLSX, PPTX, **MD, TXT, CSV, LOG**.
 - **Languages**: German (DE), Korean (KR), English (EN).
-- **Strategy**: Recursive Character splitting (Balanced context) + Metadata enrichment.
+- **Strategy**: Recursive Directory Crawling (`os.walk`) + Balanced Character splitting.
 - **Performance**: High-speed ingestion with zero ML overhead during splitting.
+- **Traversal**: Automatically includes all subfolders (recursive) during Sync.
 
 ### 2. Semantic Retrieval (ONNX Optimization)
 - **Models**: `multilingual-e5-small` (384-dim) via **FastEmbed**.
