@@ -1,3 +1,18 @@
+## [2026-04-18] [STABILITY] | Lazy loaded OCR dependencies to prevent startup crashes.
+## [2026-04-18] [UI] | Implemented Total White contrast mode for Light Mode widgets.
+## [2026-04-18] [UI] | Overhauled sidebar-heavy design to Top NAV Toolbar layout for ingestion/favorites.
+
+## [2026-04-18] [FIX] | UI Readability: Light Mode Contrast Overhaul
+- **Selectbox Fix**: Resolved "black box" issue in Light Mode by forcing white backgrounds and high-contrast dark text via robust CSS selectors.
+- **Button Contrast**: Darkened default button labels and borders for better visibility; maintained "magical" hover states with clear white-on-black text.
+- **Sidebar Clarity**: Refined sidebar colors and text contrast to ensure professional legibility.
+
+## [2026-04-18] [FIX] | Runtime Stability & Environment Hardening (v1.3.1)
+- **Path Bootstrapping**: Fixed `ModuleNotFoundError: No module named 'src'` by moving `sys.path` modification to the absolute top of `app.py`.
+- **Lazy Imports**: Refactored `ocr.py` and `pipeline.py` to lazy-load `rapidocr` and `fitz`. The app now boots and extracts text even if OCR/Thumbnail packages are missing.
+- **Dependency Sync**: Explicitly installed `pymupdf`, `rapidocr-onnxruntime`, and `opencv-python-headless` into the `.venv` used by the launcher.
+- **Git Operations**: Performed forced push to synchronize remote state with the hardened local version.
+
 ## [2026-04-18] [UPDATE] | Phase 5: UX Pro & Multi-Discovery (v1.3.0)
 - **Multi-Path Management**: Integrated **Favorites** system via `DiscoveryConfig` and sidebar controls.
 - **ONNX-OCR**: Implemented **RapidOCR** fallback for scanned/blank PDFs, ensuring 100% discovery coverage for paper-to-digital workflows.
