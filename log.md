@@ -1,4 +1,18 @@
-## [2026-04-18] [FIX] | UI Dependency Logic & Checkbox Styling (v1.3.18)
+## [2026-04-18] [FEAT] | Dynamic Pagination (v1.3.21)
+- Implemented "Load More" pagination system.
+- Added session-state based `result_limit` that increments by 40 on user request.
+- Implemented smart-reset: limit resets to 40 automatically when search query or filters change.
+
+## [2026-04-18] [FIX] | NameError & Sidebar Icon Hotfixes (v1.3.20)
+- Fixed `NameError: filter_lang is not defined` caused by scope mismatch in search logic.
+- Resolved "keyboard_double" raw text bug on sidebar collapse button: Added Material Symbols font and custom CSS visibility rules.
+- Added **"Filename Only"** search filter to explicitly target document titles.
+
+## [2026-04-18] [QA] | Search Reliability Audit (v1.3.19)
+- Increased default search result limit from 10 to 40 to prevent missing high-relevance files (e.g., law_catalog.md).
+- Hardened path normalization: added `.strip()` to `path_prefix` handling in database layer.
+- Fixed `stCheckbox` visibility bug: ensured high-contrast borders are visible in both light/dark themes.
+
 - Refactored Search Options: "Include Subfolders" now only appears when "Current Folder Only" is active.
 - Fixed "Naked Checkmark" CSS bug by adding explicit high-contrast borders to `stCheckbox`.
 - Corrected accidental code loss in `app.py` layout grid.

@@ -4,8 +4,8 @@
 - [MiniLM-L12-v2](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) - Optimized multilingual embedding engine for FastEmbed (384-dim).
 - [FastEmbed](https://github.com/qdrant/fastembed) - Light-weight, high-performance Python library for CPU-optimized embeddings.
 - [LanceDB](https://lancedb.com/) - High-performance local vector database with hybrid FTS integration.
-- [Discovery Engine](src/engine/pipeline.py) - Central RAG Orchestrator | v1.3.13
-- [Warm UI](src/ui/app.py) - Enterprise Dashboard | v1.3.13
+- [Discovery Engine](src/engine/pipeline.py) - Central RAG Orchestrator | v1.3.21
+- [Warm UI](src/ui/app.py) - Enterprise Dashboard | v1.3.21
 - [LanceDB Provider](src/engine/database.py) - Vector Storage Layer | Path-Aware Search.
 - [RapidOCR](src/engine/ocr.py) - ONNX-based lightweight OCR engine for scanned PDF discovery.
 - [Discovery Text Parser](src/parsers/text.py) - Lightweight string-based parser for .md, .txt, and .csv.
@@ -26,6 +26,8 @@
 25: - [Zero-AI Discovery](wiki/status_report.md) - Optimized retrieval strategy focusing on 100% data fidelity.
 26: - [Runtime Hardening](src/ui/app.py) - Graceful degradation and lazy loading | Stability | 2026-04-18
 - [Recursive Search Toggle](src/ui/app.py) - Granular control over deep vs. flat directory discovery | v1.3.17
+- [Filename Search Filter](src/ui/app.py) - Explicit targeting of document titles as a discovery filter.
+- [Dynamic Local Pagination](src/ui/app.py) - "Load More" system for infinite exploration of local document sets | v1.3.21
 
 ## [2026-04-18] [UI] | Sidebar Identity: Recursive Font (v1.3.15)
 - Implemented strict `nowrap` constraints for tags and action buttons.
