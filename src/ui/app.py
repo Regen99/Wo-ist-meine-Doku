@@ -22,7 +22,7 @@ project_root = _project_root
 
 
 # Current UI Version (Used for cache invalidation)
-APP_VERSION = "1.3.17"
+APP_VERSION = "1.3.20"
 
 # ── Setup & Theme Evaluation ──────────────────────────────────────────────────
 @st.cache_resource
@@ -191,6 +191,21 @@ light_css = """
         border-right: 2px solid #000000 !important; 
     }
     [data-testid="stSidebar"] * { font-family: 'Recursive', sans-serif !important; }
+
+    /* Fix: Sidebar collapse button Material Icon renders as raw text in some Streamlit builds */
+    [data-testid="stSidebarCollapseButton"] span,
+    button[kind="sidebarButton"] span,
+    [data-testid="stSidebarContent"] button span,
+    .eyeqlp50 span, .e1fqkh3o3 span {
+        font-family: 'Material Symbols Outlined', 'Material Icons', sans-serif !important;
+        font-size: 20px !important;
+        font-style: normal !important;
+        font-weight: normal !important;
+        display: inline-block !important;
+        line-height: 1 !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+    }
     
     .lang-tag, .legal-tag { 
         display: inline-flex !important;
@@ -249,6 +264,7 @@ st.markdown("<h1 style='margin-bottom: -15px; margin-top: -60px; font-size: 2.75
 base_css = f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Recursive:wght@300..1000&family=Space+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block');
     
     h1, h2, h3, h4, h5, h6, p, span, div, label {{ font-family: 'Outfit', sans-serif; }}
     
@@ -383,35 +399,49 @@ with s_col2:
     lang_filter = st.selectbox("lang", ["All", "DE", "EN"], label_visibility="collapsed", key="lang_sel_val")
 
 st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-col_opt1, col_opt2, col_opt3, col_opt4 = st.columns([0.25, 0.25, 0.25, 0.25])
+col_opt1, col_opt2, col_opt3, col_opt4, col_opt5 = st.columns([0.2, 0.2, 0.2, 0.2, 0.2])
 with col_opt1:
     legal_only = st.checkbox("Focus on Legal Context")
 with col_opt2:
     exact_match = st.checkbox("Exact Keyword Match")
 with col_opt3:
+    filename_only = st.checkbox("Filename Only")
+with col_opt4:
     current_folder_only = st.checkbox("Current Folder Only", value=False)
 
 # Discovery Logic: Only show recursion toggle if path filtering is active
 include_subfolders = True 
 if current_folder_only:
-    with col_opt4:
+    with col_opt5:
         include_subfolders = st.checkbox("Include Subfolders", value=True)
 
 if search_query:
     st.divider()
+    # Normalize language filter
     filter_lang = lang_filter.lower() if lang_filter != "All" else None
-    path_filter = st.session_state.nav_path_val if current_folder_only else None
-    
+    # Normalize path for filtering
+    raw_path = st.session_state.get('nav_path_val', "")
+    norm_path = raw_path.replace("\\", "/").rstrip("/") if raw_path else None
+
+    # Filename-only mode: search only against basenames
+    effective_query = search_query
+    if filename_only:
+        # We post-filter by filename after fetching a large set
+        filename_query = search_query.lower()
+
     try:
         results = st.session_state.pipeline.query(
-            search_query, 
-            limit=10, 
+            effective_query, 
+            limit=40, 
             language=filter_lang, 
             legal_only=legal_only, 
             exact_match=exact_match,
-            path_prefix=path_filter,
+            path_prefix=norm_path if current_folder_only else None,
             recursive=include_subfolders
         )
+        # Post-filter by filename if requested
+        if filename_only and results:
+            results = [r for r in results if filename_query in os.path.basename(r.get("source_path", "")).lower()]
     except Exception as e:
         results = None
         st.error(f"Search failed: {e}")
@@ -474,4 +504,4 @@ if search_query:
                         st.caption("Engine: Ultra-Lite ONNX • Left-aligned grid V1.3")
 
 st.divider()
-st.caption("Wo ist meine Doku v1.3.17 — Recursive Search Toggle. 100% offline.")
+st.caption("Wo ist meine Doku v1.3.20 — Filename Filter + Search Fixes. 100% offline.")

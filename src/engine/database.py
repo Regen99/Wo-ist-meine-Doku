@@ -92,7 +92,7 @@ class DiscoveryDB:
             filters.append("legal_context = true")
         if path_prefix:
             # Case-insensitive path matching for Windows stability
-            clean_prefix = path_prefix.replace("\\", "/").rstrip("/")
+            clean_prefix = path_prefix.strip().replace("\\", "/").rstrip("/")
             if recursive:
                 # Matches the directory itself or anything inside it
                 filters.append(f"(source_path ILIKE '{clean_prefix}' OR source_path ILIKE '{clean_prefix}/%')")
