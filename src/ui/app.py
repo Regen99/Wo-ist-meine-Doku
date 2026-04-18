@@ -111,27 +111,32 @@ light_css = """
     .result-card:hover { border-color: #000000 !important; background-color: #f8f9fb !important; }
     .result-card-text { color: #2d2a26 !important; }
     
-    /* 🚀 TOTAL UNIFICATION: Selectbox, Dropdown, Menu & Tooltip */
+    /* 🚀 TOTAL UNIFICATION: Selectbox, Dropdown, Menu, Tooltip & Expander */
     [data-baseweb="select"], [data-baseweb="select"] > div,
     [data-baseweb="popover"], [data-baseweb="popover"] > div,
     [data-baseweb="menu"], [data-baseweb="menu"] *,
     [data-baseweb="tooltip"], [data-baseweb="tooltip"] *,
     [role="listbox"], [role="listbox"] *,
     [role="option"], [role="option"] *,
-    .stSelectbox div, .stSelectbox [role="button"] {
+    .stSelectbox div, .stSelectbox [role="button"],
+    [data-testid="stExpander"], [data-testid="stExpander"] summary, [data-testid="stCode"] {
         background-color: #ffffff !important;
         color: #000000 !important;
     }
 
-    /* Unified Border Logic for Popovers & Menus */
-    [data-baseweb="popover"], [data-baseweb="popover"] > div, [data-baseweb="tooltip"], .stTooltipContent {
+    /* Unified Border Logic for Popovers, Menus, & Expanders */
+    [data-baseweb="popover"], [data-baseweb="popover"] > div, 
+    [data-baseweb="tooltip"], .stTooltipContent,
+    [data-testid="stExpander"], [data-testid="stCode"] {
         border: 2px solid #000000 !important;
         border-radius: 12px !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 24px !important;
     }
+    
+    [data-testid="stCode"] { padding: 10px !important; }
 
-    /* Hover States for Menus */
-    [data-baseweb="menu"] li:hover, [role="option"]:hover, [data-baseweb="popover"] li:hover {
+    /* Hover States for Menus & Expanders */
+    [data-baseweb="menu"] li:hover, [role="option"]:hover, [data-baseweb="popover"] li:hover, [data-testid="stExpander"] summary:hover {
         background-color: #f8f9fb !important;
     }
 
