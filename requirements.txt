@@ -1,0 +1,24 @@
+# ------------------------------------------------
+# Replaced Torch/Transformers with FastEmbed (MiniLM-L12-v2) to resolve freezing.
+
+# Core Embedding (ONNX-based)
+fastembed
+
+# Parsing
+pdfplumber
+sharepoint-to-text>=0.1.0
+
+# UI & Storage
+streamlit
+lancedb
+tantivy
+pydantic
+python-dotenv>=1.0.0
+pyarrow
+
+# Utilities
+einops
+split-words>=0.1.3
+python-docx
+pytest>=8.0.0
+pytest-asyncio
