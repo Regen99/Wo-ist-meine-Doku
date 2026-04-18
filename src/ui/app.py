@@ -119,8 +119,10 @@ light_css = """
     [role="listbox"], [role="listbox"] *,
     [role="option"], [role="option"] *,
     .stSelectbox div, .stSelectbox [role="button"],
-    [data-testid="stExpander"], [data-testid="stExpander"] summary, [data-testid="stCode"] {
+    [data-testid="stExpander"], [data-testid="stExpander"] summary, 
+    [data-testid="stCode"], [data-testid="stCode"] *, [data-testid="stCode"] div, [data-testid="stCode"] pre {
         background-color: #ffffff !important;
+        background: #ffffff !important;
         color: #000000 !important;
     }
 
@@ -133,7 +135,8 @@ light_css = """
         box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 24px !important;
     }
     
-    [data-testid="stCode"] { padding: 10px !important; }
+    [data-testid="stCode"] { padding: 0px !important; overflow: hidden !important; }
+    [data-testid="stCode"] pre { padding: 12px !important; margin: 0 !important; }
 
     /* Hover States for Menus & Expanders */
     [data-baseweb="menu"] li:hover, [role="option"]:hover, [data-baseweb="popover"] li:hover, [data-testid="stExpander"] summary:hover {
