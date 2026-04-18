@@ -8,7 +8,8 @@ Your system has been optimized for Maximum Speed and Stability on your local PC.
 2.  **To Use the App**: Double-click **`Launch-Doku.bat`**.
     *   This will start the dashboard and automatically open your web browser.
 
-### Key Innovations in v1.3.10
+### Key Innovations in v1.3.12
+-   **Path-Centric Discovery**: Result headers now display the **Full File Path** as the primary identifier. Instantly verify document locations across complex directory structures.
 -   **Folder-Aware Discovery**: Added a "Current Folder Only" search toggle. Restrict your search to the active project path instantly without re-indexing.
 -   **Engine Speed**: Replaced heavy dependencies with ultra-fast ONNX-based **FastEmbed**.
 -   **Multimodal Raw Ingestion**: Native support for **.md, .txt, .csv, and .log** files.
@@ -21,7 +22,7 @@ Your system has been optimized for Maximum Speed and Stability on your local PC.
 -   Select the folder in the Nav bar and click **"🔄 Sync & Index"**.
 
 ---
-*Wo ist meine Doku v1.3.10 — 100% Offline | GDPR Compliant | Professional Architecture*
+*Wo ist meine Doku v1.3.12 — 100% Offline | GDPR Compliant | Professional Architecture*
 
 ---
 
