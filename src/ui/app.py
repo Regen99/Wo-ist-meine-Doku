@@ -264,8 +264,12 @@ with st.container():
     n_left, n_right = st.columns([6.2, 3.8])
     
     favorites = config.get_favorites()
+    # Initialize plain state var (NOT a widget key — writable anytime)
     if 'nav_path_val' not in st.session_state:
-        st.session_state.nav_path_val = config.get_last_used_path()
+        st.session_state.nav_path_val = config.get_last_used_path() or ""
+    # Sync input widget value → plain state var on change
+    def _sync_path():
+        st.session_state.nav_path_val = st.session_state.nav_path_input
 
     with n_left:
         l1, l2, l3 = st.columns([2.5, 5, 1.3], vertical_alignment="bottom")
@@ -273,19 +277,29 @@ with st.container():
             st.markdown("<small><b>Project Favorites</b></small>", unsafe_allow_html=True)
             fav_options = ["-- Favorites --"] + (favorites if favorites else [])
             selected_fav = st.selectbox("fav", fav_options, label_visibility="collapsed", key="nav_fav_sel")
-            if selected_fav != "-- Favorites --" and selected_fav != st.session_state.nav_path_val:
+            if selected_fav != "-- Favorites --":
+                # Pending path set; apply before widget renders on next rerun
                 st.session_state.nav_path_val = selected_fav
+                st.session_state.nav_path_input = selected_fav
                 st.rerun()
         with l2:
             st.markdown("<small><b>Ingestion Path</b></small>", unsafe_allow_html=True)
-            # Link directly to state key for seamless updates
-            st.text_input("path", key="nav_path_val", label_visibility="collapsed")
+            # Widget uses its OWN key; on_change syncs back to nav_path_val
+            st.text_input(
+                "path",
+                value=st.session_state.nav_path_val,
+                key="nav_path_input",
+                label_visibility="collapsed",
+                on_change=_sync_path,
+            )
         with l3:
             st.markdown("<small><b>&nbsp;</b></small>", unsafe_allow_html=True) 
             if st.button("📁 Browse", help="Pick Folder", key="nav_picker", use_container_width=True):
                 path = select_folder()
                 if path:
+                    # Safe: nav_path_val is a plain state var, not a widget key
                     st.session_state.nav_path_val = path
+                    st.session_state.nav_path_input = path
                     st.rerun()
 
     with n_right:
