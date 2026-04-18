@@ -398,8 +398,19 @@ if search_query:
                     # Balanced Tag Placement
                     st.markdown(f"<div style='display: flex;'> <span class='lang-tag'>{lang}</span>{legal_badge} </div>", unsafe_allow_html=True)
                 with h_col2:
-                    # PROMINENT FILENAME: Centered and Promoted
-                    st.markdown(f"<div class='file-header' title='{html.escape(full_source_path)}'>{html.escape(filename)}</div>", unsafe_allow_html=True)
+                    # FOLDER-FIRST IDENTITY: Show the parent folder name as the primary title
+                    parent_dir_full = os.path.dirname(full_source_path)
+                    folder_name = os.path.basename(parent_dir_full) or parent_dir_full
+                    st.markdown(f"""
+                        <div style='display: flex; flex-direction: column; justify-content: center;'>
+                            <div class='file-header' style='margin-bottom: 2px;' title='File: {html.escape(filename)}'>
+                                📂 {html.escape(folder_name)}
+                            </div>
+                            <div style='font-size: 0.72rem; color: #9f9b93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' title='Full Path: {html.escape(full_source_path)}'>
+                                {html.escape(filename)}
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
                 with h_col3:
                     if st.button("📂 Open", key=f"q_open_{idx}", help=f"Open in Explorer: {filename}", use_container_width=True):
                         reveal_in_explorer(full_source_path)
