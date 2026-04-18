@@ -38,14 +38,27 @@ class DiscoveryDB:
         return self._table
 
     def file_exists(self, source_path: str) -> bool:
-        """Check if a file's chunks already exist in the database."""
+        """Check if a file's chunks already exist in the database.
+        Handles both old relative-path records and new absolute-path records.
+        """
         if self.table_name not in self.db.table_names():
             return False
 
         table = self._get_table()
-        safe_path = source_path.replace("\\", "/")
-        exists = table.search().where(f"source_path = '{safe_path}'", prefilter=True).to_list()
-        return len(exists) > 0
+
+        # Normalize to absolute forward-slash (for new records)
+        abs_path = os.path.abspath(source_path).replace("\\", "/")
+        # Also check the raw forward-slash version (for legacy records)
+        rel_path = source_path.replace("\\", "/")
+
+        for path in set([abs_path, rel_path]):
+            safe = path.replace("'", "''")
+            result = table.search().where(
+                f"source_path = '{safe}'", prefilter=True
+            ).to_list()
+            if result:
+                return True
+        return False
 
     def add_chunks(self, chunks: List[Dict[str, Any]]):
         """Add multiple chunks to the database."""

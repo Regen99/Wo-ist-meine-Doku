@@ -85,7 +85,7 @@ class DiscoveryPipeline:
             record = {
                 "vector": vector,
                 "text": text,
-                "source_path": file_path.replace("\\", "/"),
+                "source_path": os.path.abspath(file_path).replace("\\", "/"),
                 "chunk_index": meta.chunk_index,
                 "language": meta.language,
                 "legal_context": meta.legal_context,
@@ -111,7 +111,7 @@ class DiscoveryPipeline:
             return 0
 
         total_indexed = 0
-        supported = {".pdf", ".docx", ".xlsx", ".pptx"}
+        supported = {".pdf", ".docx", ".xlsx", ".pptx", ".txt", ".md", ".csv", ".log"}
 
         for root, dirs, files in os.walk(directory_path):
             # Prune hidden and system directories (e.g., .git, $RECYCLE.BIN)

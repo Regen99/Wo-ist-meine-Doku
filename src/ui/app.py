@@ -104,9 +104,12 @@ light_css = """
     
     /* 💎 UNIFIED CARD DESIGN */
     .result-card { 
-        background-color: #ffffff; 
-        border: 2px solid #000000; 
-        box-shadow: rgba(0, 0, 0, 0.05) 0px 8px 24px; 
+        background-color: #ffffff !important; 
+        border: 2px solid #000000 !important; 
+        border-radius: 16px !important;
+        padding: 24px !important;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 8px 24px !important;
+        margin-bottom: 25px !important;
     }
     .result-card:hover { border-color: #000000 !important; background-color: #f8f9fb !important; }
     .result-card-text { color: #2d2a26 !important; }
@@ -170,8 +173,32 @@ light_css = """
 
     [data-testid="stSidebar"] { background-color: #faf8f4 !important; border-right: 2px solid #000000 !important; }
     
-    .lang-tag { background-color: #eef6ff !important; color: #2d2a26 !important; border: 1px solid #00000033; }
-    .legal-tag { background-color: #f8e6ff !important; color: #2d2a26 !important; border: 1px solid #00000033; }
+    .lang-tag, .legal-tag { 
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 42px !important;
+        min-width: 48px !important;
+        padding: 0 12px !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        border: 2px solid #000000 !important;
+        margin-right: 5px !important;
+    }
+    .lang-tag { background-color: #eef6ff !important; color: #1a1a1a !important; }
+    .legal-tag { background-color: #f8e6ff !important; color: #1a1a1a !important; }
+    
+    .file-header { 
+        font-weight: 700 !important; 
+        font-size: 1.1rem !important; 
+        color: #1a1a1a !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        text-align: center !important;
+        line-height: 42px !important;
+    }
 """
 
 dark_css = """
@@ -237,8 +264,8 @@ with st.container():
     n_left, n_right = st.columns([6.2, 3.8])
     
     favorites = config.get_favorites()
-    if '_dir_widget' not in st.session_state:
-        st.session_state._dir_widget = config.get_last_used_path()
+    if 'nav_path_val' not in st.session_state:
+        st.session_state.nav_path_val = config.get_last_used_path()
 
     with n_left:
         l1, l2, l3 = st.columns([2.5, 5, 1.3], vertical_alignment="bottom")
@@ -246,25 +273,26 @@ with st.container():
             st.markdown("<small><b>Project Favorites</b></small>", unsafe_allow_html=True)
             fav_options = ["-- Favorites --"] + (favorites if favorites else [])
             selected_fav = st.selectbox("fav", fav_options, label_visibility="collapsed", key="nav_fav_sel")
-            if selected_fav != "-- Favorites --" and selected_fav != st.session_state._dir_widget:
-                st.session_state._dir_widget = selected_fav
+            if selected_fav != "-- Favorites --" and selected_fav != st.session_state.nav_path_val:
+                st.session_state.nav_path_val = selected_fav
                 st.rerun()
         with l2:
             st.markdown("<small><b>Ingestion Path</b></small>", unsafe_allow_html=True)
-            current_path = st.text_input("path", value=st.session_state._dir_widget, label_visibility="collapsed", key="nav_path_val")
-            st.session_state._dir_widget = current_path
+            # Link directly to state key for seamless updates
+            st.text_input("path", key="nav_path_val", label_visibility="collapsed")
         with l3:
             st.markdown("<small><b>&nbsp;</b></small>", unsafe_allow_html=True) 
             if st.button("📁 Browse", help="Pick Folder", key="nav_picker", use_container_width=True):
                 path = select_folder()
                 if path:
-                    st.session_state._dir_widget = path
+                    st.session_state.nav_path_val = path
                     st.rerun()
 
     with n_right:
         r1, r2 = st.columns([1.5, 3.5], vertical_alignment="bottom")
         with r1:
             st.markdown("<small><b>&nbsp;</b></small>", unsafe_allow_html=True) 
+            current_path = st.session_state.nav_path_val
             is_fav = (current_path or "").replace("\\", "/") in [f.replace("\\", "/") for f in favorites]
             btn_text = "⭐ Fav" if not is_fav else "🗑️ Unfav"
             if st.button(btn_text, help="Add/Remove Favorite", key="nav_fav_toggle", use_container_width=True):
@@ -278,9 +306,9 @@ with st.container():
 # Status Container (Outside columns to prevent height fragmentation)
 status_placeholder = st.empty()
 if sync_triggered:
-    config.set_last_used_path(st.session_state._dir_widget)
+    config.set_last_used_path(st.session_state.nav_path_val)
     with status_placeholder.status("Indexing...", expanded=True) as status:
-        new_files = st.session_state.pipeline.run_incremental_pipeline(st.session_state._dir_widget)
+        new_files = st.session_state.pipeline.run_incremental_pipeline(st.session_state.nav_path_val)
         status.update(label=f"Done! +{new_files} files", state="complete", expanded=False)
     st.rerun()
 
@@ -327,21 +355,24 @@ if search_query:
 
             # Result Card Container
             with st.container():
-                # ENTERPRISE UX: Clear text labels for actions, consistent left alignment
-                h_col1, h_col2, h_col3, _ = st.columns([0.2, 0.12, 0.12, 0.56], vertical_alignment="center")
+                # ENTERPRISE UX: Increased filename visibility in the header row
+                h_col1, h_col2, h_col3, h_col4 = st.columns([0.12, 0.58, 0.15, 0.15], vertical_alignment="center")
                 with h_col1:
-                    st.markdown(f"<span class='lang-tag'>{lang}</span>{legal_badge}", unsafe_allow_html=True)
+                    # Balanced Tag Placement
+                    st.markdown(f"<div style='display: flex;'> <span class='lang-tag'>{lang}</span>{legal_badge} </div>", unsafe_allow_html=True)
                 with h_col2:
-                    if st.button("📂 Open", key=f"q_open_{idx}", help="Open in Explorer"):
-                        reveal_in_explorer(full_source_path)
+                    # PROMINENT FILENAME: Centered and Promoted
+                    st.markdown(f"<div class='file-header' title='{html.escape(full_source_path)}'>{html.escape(filename)}</div>", unsafe_allow_html=True)
                 with h_col3:
-                    if st.button("📋 Copy", key=f"q_copy_{idx}", help="Copy Path"):
-                        st.toast("Path copied!", icon="📎")
+                    if st.button("📂 Open", key=f"q_open_{idx}", help=f"Open in Explorer: {filename}", use_container_width=True):
+                        reveal_in_explorer(full_source_path)
+                with h_col4:
+                    if st.button("📋 Copy", key=f"q_copy_{idx}", help=f"Copy full path to clipboard", use_container_width=True):
+                        st.toast(f"Copied: {filename}", icon="📎")
                 
-                # CONTENT CARD (Strict Left)
+                # CONTENT CARD (Balanced Spacing)
                 card_html = (
-                    f'<div class="result-card" style="margin-top: -5px;">'
-                    f'<div style="text-align: left; margin-bottom: 8px;"><small class="file-tag">FILE: {html.escape(filename)}</small></div>'
+                    f'<div class="result-card" style="margin-top: 12px;">'
                     f'<div class="result-card-text">{content}</div>'
                     f'</div>'
                 )
