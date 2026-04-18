@@ -1,3 +1,8 @@
+## [2026-04-18] [FIX] | UI Dependency Logic & Checkbox Styling (v1.3.18)
+- Refactored Search Options: "Include Subfolders" now only appears when "Current Folder Only" is active.
+- Fixed "Naked Checkmark" CSS bug by adding explicit high-contrast borders to `stCheckbox`.
+- Corrected accidental code loss in `app.py` layout grid.
+
 ## [2026-04-18] [FEAT] | Recursive Search Toggle (v1.3.17)
 - Added "Include Subfolders" toggle to search filters.
 - Implemented `ILIKE` for case-insensitive path matching in LanceDB.

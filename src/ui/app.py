@@ -137,10 +137,20 @@ light_css = """
     /* Unified Border Logic for Popovers, Menus, & Expanders */
     [data-baseweb="popover"], [data-baseweb="popover"] > div, 
     [data-baseweb="tooltip"], .stTooltipContent,
+    [data-testid="stCheckbox"] div[role="checkbox"],
     [data-testid="stExpander"], [data-testid="stCode"] {
         border: 2px solid #000000 !important;
         border-radius: 12px !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 24px !important;
+    }
+    
+    /* Specific Checkbox sizing & alignment */
+    [data-testid="stCheckbox"] { margin-bottom: 0px !important; }
+    [data-testid="stCheckbox"] div[role="checkbox"] { 
+        background-color: #ffffff !important; 
+        width: 20px !important; 
+        height: 20px !important; 
+        border-radius: 6px !important; 
     }
     
     [data-testid="stCode"] { padding: 0px !important; overflow: hidden !important; }
@@ -380,8 +390,12 @@ with col_opt2:
     exact_match = st.checkbox("Exact Keyword Match")
 with col_opt3:
     current_folder_only = st.checkbox("Current Folder Only", value=False)
-with col_opt4:
-    include_subfolders = st.checkbox("Include Subfolders", value=True, disabled=not current_folder_only)
+
+# Discovery Logic: Only show recursion toggle if path filtering is active
+include_subfolders = True 
+if current_folder_only:
+    with col_opt4:
+        include_subfolders = st.checkbox("Include Subfolders", value=True)
 
 if search_query:
     st.divider()
