@@ -76,10 +76,11 @@ class DiscoveryDB:
                limit: int = 5,
                language: Optional[str] = None,
                legal_only: bool = False,
-               exact_match: bool = False) -> List[Dict[str, Any]]:
+               exact_match: bool = False,
+               path_prefix: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Hybrid search (Semantic Vector + Full-Text Search).
-        Supports language and legal context filtering.
+        Supports language, legal context, and directory filtering.
         """
         table = self._get_table()
 
@@ -88,6 +89,10 @@ class DiscoveryDB:
             filters.append(f"language = '{language}'")
         if legal_only:
             filters.append("legal_context = true")
+        if path_prefix:
+            # Prefix match for directory filtering
+            clean_prefix = path_prefix.replace("\\", "/").rstrip("/")
+            filters.append(f"source_path LIKE '{clean_prefix}%'")
 
         filter_str = " AND ".join(filters) if filters else None
 

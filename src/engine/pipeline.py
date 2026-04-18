@@ -129,7 +129,7 @@ class DiscoveryPipeline:
 
     def query(self, text: str, limit: int = 5,
                language: str = None, legal_only: bool = False,
-               exact_match: bool = False) -> List[Dict[str, Any]]:
+               exact_match: bool = False, path_prefix: str = None) -> List[Dict[str, Any]]:
         """
         Multilingual search (Semantic or FTS).
         """
@@ -145,5 +145,6 @@ class DiscoveryPipeline:
             limit=limit,
             language=language,
             legal_only=legal_only,
-            exact_match=exact_match
+            exact_match=exact_match,
+            path_prefix=path_prefix
         )

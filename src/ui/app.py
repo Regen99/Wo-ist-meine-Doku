@@ -347,17 +347,28 @@ with s_col2:
     lang_filter = st.selectbox("lang", ["All", "DE", "EN"], label_visibility="collapsed", key="lang_sel_val")
 
 st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-col_opt1, col_opt2 = st.columns([0.4, 0.6])
+col_opt1, col_opt2, col_opt3 = st.columns([0.3, 0.35, 0.35])
 with col_opt1:
     legal_only = st.checkbox("Focus on Legal Context")
 with col_opt2:
     exact_match = st.checkbox("Exact Keyword Match")
+with col_opt3:
+    current_folder_only = st.checkbox("Current Folder Only", value=False)
 
 if search_query:
     st.divider()
     filter_lang = lang_filter.lower() if lang_filter != "All" else None
+    path_filter = st.session_state.nav_path_val if current_folder_only else None
+    
     try:
-        results = st.session_state.pipeline.query(search_query, limit=10, language=filter_lang, legal_only=legal_only, exact_match=exact_match)
+        results = st.session_state.pipeline.query(
+            search_query, 
+            limit=10, 
+            language=filter_lang, 
+            legal_only=legal_only, 
+            exact_match=exact_match,
+            path_prefix=path_filter
+        )
     except Exception as e:
         results = None
         st.error(f"Search failed: {e}")
