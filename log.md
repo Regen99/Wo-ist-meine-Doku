@@ -1,3 +1,17 @@
+## [2026-04-18] [FIX] | Responsive UI Hardening (v1.3.13)
+- Enforced `white-space: nowrap` on tags, headers, and buttons.
+- Optimized result header column ratios (18/52/15/15) for high badge density.
+- Prevented font/icon line wrapping during container resize.
+
+## [2026-04-18] [FEAT] | Path-Centric Result Headers (v1.3.12)
+- Replaced filename header with full source path for absolute clarity.
+- Unified identifying information into a single, high-contrast primary label.
+
+## [2026-04-18] [FEAT] | Folder-Aware Discovery & State Hardening (v1.3.11)
+- Added "Current Folder Only" search filter.
+- Decoupled widget keys from session state to resolve StreamlitAPIExceptions.
+- Implemented Version-Aware Pipeline reloads.
+
 ## [2026-04-18] [STABILITY] | Lazy loaded OCR dependencies to prevent startup crashes.
 ## [2026-04-18] [FEAT] | Added support for .md, .txt, .csv, and .log files.
 ## [2026-04-18] [UI] | Implemented Total White contrast mode for Light Mode widgets.

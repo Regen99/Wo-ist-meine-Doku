@@ -4,11 +4,9 @@
 - [MiniLM-L12-v2](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) - Optimized multilingual embedding engine for FastEmbed (384-dim).
 - [FastEmbed](https://github.com/qdrant/fastembed) - Light-weight, high-performance Python library for CPU-optimized embeddings.
 - [LanceDB](https://lancedb.com/) - High-performance local vector database with hybrid FTS integration.
-- [Discovery Dashboard](src/ui/app.py) - Streamlit-based interface for document exploration.
-- [Discovery Engine](src/engine/pipeline.py) - Orchestrator for parsing, chunking, and indexing logic.
-
-
-- [Discovery DB](src/engine/database.py) - LanceDB storage for hybrid search.
+- [Discovery Engine](src/engine/pipeline.py) - Central RAG Orchestrator | v1.3.13
+- [Warm UI](src/ui/app.py) - Enterprise Dashboard | v1.3.13
+- [LanceDB Provider](src/engine/database.py) - Vector Storage Layer | Path-Aware Search.
 - [RapidOCR](src/engine/ocr.py) - ONNX-based lightweight OCR engine for scanned PDF discovery.
 - [Discovery Text Parser](src/parsers/text.py) - Lightweight string-based parser for .md, .txt, and .csv.
 - [ConfigManager](src/utils/config.py) - Persistent configuration system for favorites and last-used states.
@@ -26,7 +24,12 @@
 - [Recursive Chunking](src/engine/chunker.py) - Balanced document splitting using RecursiveCharacterTextSplitter for zero ML overhead during ingestion.
 - [Zero-AI Discovery](wiki/status_report.md) - Optimized retrieval strategy focusing on 100% data fidelity.
 - [Runtime Hardening](src/ui/app.py) - Graceful degradation and lazy loading | Stability | 2026-04-18
-- [Top NAV Toolbar](src/ui/app.py) - Centralized project controls for better UX | UI | 2026-04-18
+- [2026-04-18] [FIX] | Responsive UI Hardening (v1.3.13)
+- Implemented strict `nowrap` constraints for tags and action buttons.
+- Adjusted column ratios (18/52/15/15) for better badge visibility on small screens.
+- Fixed font/icon wrapping issues in search result headers.
+
+- [2026-04-18] [FEAT] | Path Context in Search Results
 
 ## Sources
 - [research.md](wiki/research.md) - Strategic Architectural Blueprint for Integrated Multimodal Semantic Search.
