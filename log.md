@@ -1,3 +1,11 @@
+## [2026-04-18] [UI] | Sidebar Identity: Recursive Font (v1.3.15)
+- Switched all sidebar text elements to the `Recursive` Google Font.
+- Imported `Recursive` (wght 300-1000) for better navigational contrast.
+
+## [2026-04-18] [FIX] | CSS f-string NameError (v1.3.14)
+- Fixed `NameError` by doubling CSS braces `{{ }}` in `app.py`.
+- Restored application startup stability.
+
 ## [2026-04-18] [FIX] | Responsive UI Hardening (v1.3.13)
 - Enforced `white-space: nowrap` on tags, headers, and buttons.
 - Optimized result header column ratios (18/52/15/15) for high badge density.

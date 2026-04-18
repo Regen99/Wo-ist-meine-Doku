@@ -176,7 +176,11 @@ light_css = """
         color: #000000 !important;
     }
 
-    [data-testid="stSidebar"] { background-color: #faf8f4 !important; border-right: 2px solid #000000 !important; }
+    [data-testid="stSidebar"] { 
+        background-color: #faf8f4 !important; 
+        border-right: 2px solid #000000 !important; 
+    }
+    [data-testid="stSidebar"] * { font-family: 'Recursive', sans-serif !important; }
     
     .lang-tag, .legal-tag { 
         display: inline-flex !important;
@@ -190,6 +194,8 @@ light_css = """
         font-size: 0.85rem !important;
         border: 2px solid #000000 !important;
         margin-right: 5px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
     .lang-tag { background-color: #eef6ff !important; color: #1a1a1a !important; }
     .legal-tag { background-color: #f8e6ff !important; color: #1a1a1a !important; }
@@ -232,9 +238,13 @@ st.markdown("<h1 style='margin-bottom: -15px; margin-top: -60px; font-size: 2.75
 
 base_css = f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Space+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Recursive:wght@300..1000&family=Space+Mono&display=swap');
     
     h1, h2, h3, h4, h5, h6, p, span, div, label {{ font-family: 'Outfit', sans-serif; }}
+    
+    [data-testid="stSidebar"] * {{
+        font-family: 'Recursive', sans-serif !important;
+    }}
     .result-card {{ border-radius: 24px; padding: 32px; margin-bottom: 24px; transition: all 0.25s; }}
     .result-card-text {{ font-size: 1.13rem; line-height: 1.6; white-space: pre-wrap; }}
     
@@ -251,11 +261,22 @@ base_css = f"""
         border-radius: 12px !important;
         font-weight: 500 !important;
         transition: all 0.2s !important;
+        white-space: nowrap !important;
     }}
 
     mark {{ background-color: #fbbd41 !important; color: #000000 !important; border-radius: 4px; padding: 2px 6px; }}
-    .lang-tag, .legal-tag {{ font-family: 'Space Mono', monospace !important; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.08px; padding: 6px 12px; border-radius: 11px; margin-right: 8px; }}
-    .file-tag {{ font-family: 'Space Mono', monospace !important; font-size: 0.75rem; color: #9f9b93 !important; }}
+    .lang-tag, .legal-tag {{ 
+        font-family: 'Space Mono', monospace !important; 
+        font-size: 0.65rem; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        letter-spacing: 1.08px; 
+        padding: 6px 12px; 
+        border-radius: 11px; 
+        margin-right: 8px; 
+        white-space: nowrap !important;
+    }}
+    .file-tag {{ font-family: 'Space Mono', monospace !important; font-size: 0.75rem; color: #9f9b93 !important; white-space: nowrap !important; }}
 
     {dark_css if is_dark else light_css}
 </style>
@@ -392,11 +413,11 @@ if search_query:
 
             # Result Card Container
             with st.container():
-                # ENTERPRISE UX: Increased filename visibility in the header row
-                h_col1, h_col2, h_col3, h_col4 = st.columns([0.12, 0.58, 0.15, 0.15], vertical_alignment="center")
+                # ENTERPRISE UX: Increased space for tags and ensured NO WRAP column behavior
+                h_col1, h_col2, h_col3, h_col4 = st.columns([0.18, 0.52, 0.15, 0.15], vertical_alignment="center")
                 with h_col1:
-                    # Balanced Tag Placement
-                    st.markdown(f"<div style='display: flex;'> <span class='lang-tag'>{lang}</span>{legal_badge} </div>", unsafe_allow_html=True)
+                    # Balanced Tag Placement: No Wrap for status badges
+                    st.markdown(f"<div style='display: flex; white-space: nowrap; overflow: visible;'> <span class='lang-tag'>{lang}</span>{legal_badge} </div>", unsafe_allow_html=True)
                 with h_col2:
                     # PATH-CENTRIC IDENTITY: Show the full path as the primary header
                     st.markdown(f"""
