@@ -1,5 +1,4 @@
 import logging
-import fitz  # PyMuPDF for PDF-to-image rendering
 
 logger = logging.getLogger(__name__)
 
@@ -8,39 +7,47 @@ class DiscoveryOCR:
     """
     Lightweight ONNX-based OCR for discovery.
     Uses RapidOCR for German and English support without heavy framework deps.
+    All heavy imports (fitz, rapidocr) are lazy — the app starts even if
+    these packages are not yet installed.
     """
 
     def __init__(self):
-        # Lazy import to avoid crash when rapidocr is not yet installed
+        self.engine = None
+        self._fitz = None
         try:
             from rapidocr_onnxruntime import RapidOCR
             self.engine = RapidOCR()
+        except ImportError:
+            logger.warning("rapidocr_onnxruntime not installed — OCR disabled.")
         except Exception as e:
             logger.error(f"Failed to initialize RapidOCR: {e}")
-            self.engine = None
+
+        try:
+            import fitz
+            self._fitz = fitz
+        except ImportError:
+            logger.warning("PyMuPDF (fitz) not installed — OCR page rendering disabled.")
 
     def ocr_pdf(self, pdf_path: str, max_pages: int = 5) -> str:
         """
         Extracts text from a scanned PDF via OCR.
         Converts each page to an image then runs RapidOCR on the bytes.
         """
-        if not self.engine:
+        if not self.engine or not self._fitz:
             return ""
 
+        fitz = self._fitz
         full_text = []
         try:
-            # Context manager ensures doc is always closed, even on error
             with fitz.open(pdf_path) as doc:
                 pages_to_ocr = min(len(doc), max_pages)
                 for page_num in range(pages_to_ocr):
                     page = doc.load_page(page_num)
-                    # 2x scale improves OCR accuracy on small text
                     pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
                     img_bytes = pix.tobytes("png")
 
                     result, _ = self.engine(img_bytes)
                     if result:
-                        # result format: [[box, text, score], ...]
                         page_text = "\n".join([line[1] for line in result])
                         full_text.append(page_text)
 

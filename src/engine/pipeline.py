@@ -5,7 +5,6 @@ from src.engine.database import DiscoveryDB
 from src.engine.ocr import DiscoveryOCR
 import os
 import logging
-import fitz  # PyMuPDF
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -31,6 +30,7 @@ class DiscoveryPipeline:
             return None
         
         try:
+            import fitz  # PyMuPDF — lazy import to avoid crash if not installed
             doc = fitz.open(file_path)
             if len(doc) > 0:
                 page = doc.load_page(0)
@@ -38,9 +38,12 @@ class DiscoveryPipeline:
                 img_bytes = pix.tobytes("png")
                 doc.close()
                 return img_bytes
+        except ImportError:
+            logger.warning("PyMuPDF not installed — thumbnails disabled.")
         except Exception as e:
             logger.error(f"Thumbnail error for {file_path}: {e}")
         return None
+
 
     def ingest_file(self, file_path: str) -> bool:
         """

@@ -1,7 +1,15 @@
-import streamlit as st
-import html
 import os
 import sys
+
+# ── Path Bootstrap ─────────────────────────────────────────────────────────────
+# Must happen BEFORE any `from src.*` imports.
+# app.py lives at src/ui/app.py → project root is two levels up.
+_project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
+import streamlit as st
+import html
 import subprocess
 import re
 from src.engine.pipeline import DiscoveryPipeline
@@ -9,10 +17,9 @@ from src.utils.config import ConfigManager
 import tkinter as tk
 from tkinter import filedialog
 
-# Restore project_root for path resolution (used by reveal_in_explorer)
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+# Alias for use in reveal_in_explorer path resolution
+project_root = _project_root
+
 
 # ── Setup & Theme Evaluation ──────────────────────────────────────────────────
 @st.cache_resource
