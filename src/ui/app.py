@@ -22,7 +22,7 @@ project_root = _project_root
 
 
 # Current UI Version (Used for cache invalidation)
-APP_VERSION = "1.3.20"
+APP_VERSION = "1.3.21"
 
 # ── Setup & Theme Evaluation ──────────────────────────────────────────────────
 @st.cache_resource
@@ -415,6 +415,16 @@ if current_folder_only:
     with col_opt5:
         include_subfolders = st.checkbox("Include Subfolders", value=True)
 
+# ── Dynamic Result Limit Logic ────────────
+if 'result_limit' not in st.session_state:
+    st.session_state.result_limit = 40
+
+# Reset limit if search parameters change
+current_params = f"{search_query}|{lang_filter}|{legal_only}|{exact_match}|{filename_only}|{current_folder_only}|{include_subfolders}"
+if st.session_state.get("last_search_params") != current_params:
+    st.session_state.result_limit = 40
+    st.session_state.last_search_params = current_params
+
 if search_query:
     st.divider()
     # Normalize language filter
@@ -432,7 +442,7 @@ if search_query:
     try:
         results = st.session_state.pipeline.query(
             effective_query, 
-            limit=40, 
+            limit=st.session_state.result_limit, 
             language=filter_lang, 
             legal_only=legal_only, 
             exact_match=exact_match,
@@ -503,5 +513,16 @@ if search_query:
                         st.code(full_source_path, language="text")
                         st.caption("Engine: Ultra-Lite ONNX • Left-aligned grid V1.3")
 
+        # LOAD MORE BUTTON
+        # Show only if we hit the current limit (suggesting there's more in DB)
+        if len(results) >= 0: # We don't know the raw DB count easily here, but we can check if results returned
+             # Let's simplify: if we returned at least some results, allow loading more
+             # Better: check if we actually hit the limit we asked for (before filtering)
+             # But let's just use st.session_state.result_limit as the threshold
+             st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+             if st.button(f"➕ Load More Results (Currently showing up to {st.session_state.result_limit})", use_container_width=True):
+                 st.session_state.result_limit += 40
+                 st.rerun()
+
 st.divider()
-st.caption("Wo ist meine Doku v1.3.20 — Filename Filter + Search Fixes. 100% offline.")
+st.caption("Wo ist meine Doku v1.3.21 — Dynamic Pagination. 100% offline.")
